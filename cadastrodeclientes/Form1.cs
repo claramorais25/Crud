@@ -22,8 +22,98 @@ namespace cadastrodeclientes
         public frmCadastrodeClientes()
         {
          InitializeComponent();
+
+            //Configuração inicial do ListView para exibição dos dados dos clientes
+            lstCliente.View = View.Details;       //Define a visualização como "Detalhes"
+            lstCliente.LabelEdit = true;          //Permite editar os títulos das colunas
+            lstCliente.AllowColumnReorder = true; //Permite reordenar as colunas
+            lstCliente.FullRowSelect = true;      //Seleciona a linha inteira ao clicar
+            lstCliente.GridLines = true;          //Exibe as linhas de grade no ListView
+
+            //Definindo as colunas do ListView
+            lstCliente.Columns.Add("Codigo", 100, HorizontalAlignment.Left); //Coluna de código
+            lstCliente.Columns.Add("Nome Completo", 200, HorizontalAlignment.Left); //Coluna de Nome Completo
+            lstCliente.Columns.Add("Nome Social", 200, HorizontalAlignment.Left); //Coluna de Nome Social
+            lstCliente.Columns.Add("E-mail", 200, HorizontalAlignment.Left); //Coluna de E-mail
+            lstCliente.Columns.Add("CPF", 200, HorizontalAlignment.Left); //Coluna de CPF
+
+            //Carrega os dados dos clientes na interface
+            carregar_clientes();
         }
 
+        private void carregar_clientes_com_query(string query)
+        {
+            try
+            {
+                //Cria a conexão com banco de dados
+                Conexao = new MySqlConnection(data_source);
+                Conexao.Open();
+
+                //Executa a consulta SQL fornecida 
+                MySqlCommand cmd = new MySqlCommand(query, Conexao);
+
+                //Se a consulta contém o parâmetro @q, adiciona o valor da caixa de pesquisa
+                if (query.Contains("@q"))
+                {
+                    cmd.Parameters.AddWithValue("@q", "%" + txtBuscar.Text + "%");
+                }
+
+                //Executa o comando e obtém os resultados
+                MySqlDataReader reader = cmd.ExecuteReader();
+
+                //Limpa os itens existentes no ListView antes de adicionar novos
+                lstCliente.Items.Clear();
+
+                //Preencher o ListView com os dados dos clientes
+                while(reader.Read())
+                {
+                    //Cria uma linha para cada cliente com os dados retornados da consulta
+                    string[] row =
+                    {
+                        Convert.ToString(reader.GetInt32(0)), //Codigo
+                        reader.GetString(1),
+                        reader.GetString(2),
+                        reader.GetString(3),
+                        reader.GetString(4)
+                    };
+
+                    //Adiciona a linha ao ListView
+                    lstCliente.Items.Add(new ListViewItem(row));
+                }
+            }
+            catch (MySqlException ex)
+            {
+                //Trata erros relacionados ao MySQL
+                MessageBox.Show("Erro " + ex.Number + " ocorreu: " + ex.Message,
+                    "Erro",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+            }
+            catch (Exception ex)
+            {
+                //Trata outros tipos de erro
+                MessageBox.Show("Ocorreu: " + ex.Message,
+                      "Erro",
+                      MessageBoxButtons.OK,
+                      MessageBoxIcon.Error);
+            }
+            finally
+            {
+                //Garante que a conexão com o banco será fechada, mesmo se ocorrer erro
+                if (Conexao != null && Conexao.State == ConnectionState.Open)
+                {
+                    Conexao.Close();                            
+                }
+            }
+        }
+
+        //Método para carregar todos os clientes no ListView (usando uma consulta sem parâmetros)
+        private void carregar_clientes()
+        {
+            string query = "SELECT * FROM dadosdecliente ORDER BY codigo DESC";
+            carregar_clientes_com_query(query);
+        }
+        
         //Validação Regex
         private bool isValidEmail(string email)
         {
@@ -89,7 +179,7 @@ namespace cadastrodeclientes
                 Conexao.Open();
 
                 //Teste de abertura de banco
-               MessageBox.Show("Conexão aberta com sucesso");
+                MessageBox.Show("Conexão aberta com sucesso");
 
                 //Comando SQL para inserir um novo cliente no banco de dados
                 MySqlCommand cmd = new MySqlCommand
@@ -117,6 +207,17 @@ namespace cadastrodeclientes
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Information);
 
+                //Limpa os campos no após o sucesso
+                txtNomeCompleto.Text = string.Empty;
+                txtNomeSocial.Text = " ";
+                txtEmail.Text = " ";
+                txtCPF.Text = " ";
+
+                //Recarregar os clientes na ListView
+                carregar_clientes();
+
+                //Muda para a aba de pesquisa
+                tabControl1.SelectedIndex = 1;
             }
 
             catch (MySqlException ex)
@@ -127,19 +228,19 @@ namespace cadastrodeclientes
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
             }
-             
+
             catch (Exception ex)
             {
-              //Trata outros tipos de erro
-              MessageBox.Show("Ocorreu: " + ex.Message,
-                    "Erro",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
+                //Trata outros tipos de erro
+                MessageBox.Show("Ocorreu: " + ex.Message,
+                      "Erro",
+                      MessageBoxButtons.OK,
+                      MessageBoxIcon.Error);
             }
             finally
             {
                 //Garante que a conexão com o banco será fechada, mesmo se ocorrer erro
-                if(Conexao != null && Conexao.State == ConnectionState.Open)
+                if (Conexao != null && Conexao.State == ConnectionState.Open)
                 {
                     Conexao.Close();
 
@@ -147,6 +248,12 @@ namespace cadastrodeclientes
                     MessageBox.Show("Conexão fechada com sucesso");
                 }
             }
+        }
+
+        private void btnPesquisar_Click(object sender, EventArgs e)
+        {
+            string query = "SELECT * FROM dadosdecliente WHERE nomecompleto LIKE @q OR nomesocial LIKE @q ORDER BY codigo DESC";
+            carregar_clientes_com_query(query);
         }
     }
 }
