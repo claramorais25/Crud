@@ -42,10 +42,11 @@ namespace cadastrodeclientes
             this.txtNomeCompleto = new System.Windows.Forms.TextBox();
             this.lblNomeCompleto = new System.Windows.Forms.Label();
             this.tbConsulta = new System.Windows.Forms.TabPage();
-            this.btnSalvar = new System.Windows.Forms.Button();
-            this.txtBuscar = new System.Windows.Forms.TextBox();
-            this.btnPesquisar = new System.Windows.Forms.Button();
             this.lstCliente = new System.Windows.Forms.ListView();
+            this.btnPesquisar = new System.Windows.Forms.Button();
+            this.txtBuscar = new System.Windows.Forms.TextBox();
+            this.btnSalvar = new System.Windows.Forms.Button();
+            this.btnNovoCliente = new System.Windows.Forms.Button();
             this.panelTopo.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tbCadastro.SuspendLayout();
@@ -184,26 +185,16 @@ namespace cadastrodeclientes
             this.tbConsulta.Text = "Consulta";
             this.tbConsulta.UseVisualStyleBackColor = true;
             // 
-            // btnSalvar
+            // lstCliente
             // 
-            this.btnSalvar.BackColor = System.Drawing.SystemColors.Highlight;
-            this.btnSalvar.Font = new System.Drawing.Font("Century Gothic", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnSalvar.ForeColor = System.Drawing.Color.White;
-            this.btnSalvar.Location = new System.Drawing.Point(12, 399);
-            this.btnSalvar.Name = "btnSalvar";
-            this.btnSalvar.Size = new System.Drawing.Size(118, 39);
-            this.btnSalvar.TabIndex = 2;
-            this.btnSalvar.Text = "Salvar";
-            this.btnSalvar.UseVisualStyleBackColor = false;
-            this.btnSalvar.Click += new System.EventHandler(this.btnSalvar_Click);
-            // 
-            // txtBuscar
-            // 
-            this.txtBuscar.BackColor = System.Drawing.SystemColors.Window;
-            this.txtBuscar.Location = new System.Drawing.Point(18, 20);
-            this.txtBuscar.Name = "txtBuscar";
-            this.txtBuscar.Size = new System.Drawing.Size(309, 26);
-            this.txtBuscar.TabIndex = 0;
+            this.lstCliente.HideSelection = false;
+            this.lstCliente.Location = new System.Drawing.Point(0, 73);
+            this.lstCliente.MultiSelect = false;
+            this.lstCliente.Name = "lstCliente";
+            this.lstCliente.Size = new System.Drawing.Size(765, 153);
+            this.lstCliente.TabIndex = 2;
+            this.lstCliente.UseCompatibleStateImageBehavior = false;
+            this.lstCliente.ItemSelectionChanged += new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(this.lstCliente_ItemSelectionChanged);
             // 
             // btnPesquisar
             // 
@@ -217,20 +208,48 @@ namespace cadastrodeclientes
             this.btnPesquisar.UseVisualStyleBackColor = false;
             this.btnPesquisar.Click += new System.EventHandler(this.btnPesquisar_Click);
             // 
-            // lstCliente
+            // txtBuscar
             // 
-            this.lstCliente.HideSelection = false;
-            this.lstCliente.Location = new System.Drawing.Point(0, 73);
-            this.lstCliente.Name = "lstCliente";
-            this.lstCliente.Size = new System.Drawing.Size(765, 153);
-            this.lstCliente.TabIndex = 2;
-            this.lstCliente.UseCompatibleStateImageBehavior = false;
+            this.txtBuscar.BackColor = System.Drawing.SystemColors.Window;
+            this.txtBuscar.Location = new System.Drawing.Point(18, 20);
+            this.txtBuscar.Name = "txtBuscar";
+            this.txtBuscar.Size = new System.Drawing.Size(309, 26);
+            this.txtBuscar.TabIndex = 0;
+            // 
+            // btnSalvar
+            // 
+            this.btnSalvar.BackColor = System.Drawing.SystemColors.Highlight;
+            this.btnSalvar.Font = new System.Drawing.Font("Century Gothic", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnSalvar.ForeColor = System.Drawing.Color.White;
+            this.btnSalvar.Location = new System.Drawing.Point(12, 399);
+            this.btnSalvar.Name = "btnSalvar";
+            this.btnSalvar.Size = new System.Drawing.Size(118, 39);
+            this.btnSalvar.TabIndex = 2;
+            this.btnSalvar.Text = "Salvar";
+            this.btnSalvar.UseVisualStyleBackColor = false;
+            this.btnSalvar.Click += new System.EventHandler(this.btnSalvar_Click);
+            // 
+            // btnNovoCliente
+            // 
+            this.btnNovoCliente.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
+            this.btnNovoCliente.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnNovoCliente.ForeColor = System.Drawing.Color.White;
+            this.btnNovoCliente.Image = global::cadastrodeclientes.Properties.Resources.cliente;
+            this.btnNovoCliente.Location = new System.Drawing.Point(136, 399);
+            this.btnNovoCliente.Name = "btnNovoCliente";
+            this.btnNovoCliente.Size = new System.Drawing.Size(133, 38);
+            this.btnNovoCliente.TabIndex = 3;
+            this.btnNovoCliente.Text = "Novo Cliente";
+            this.btnNovoCliente.TextImageRelation = System.Windows.Forms.TextImageRelation.TextBeforeImage;
+            this.btnNovoCliente.UseVisualStyleBackColor = false;
+            this.btnNovoCliente.Click += new System.EventHandler(this.btnNovoCliente_Click);
             // 
             // frmCadastrodeClientes
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.btnNovoCliente);
             this.Controls.Add(this.btnSalvar);
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.panelTopo);
@@ -266,6 +285,7 @@ namespace cadastrodeclientes
         private System.Windows.Forms.ListView lstCliente;
         private System.Windows.Forms.Button btnPesquisar;
         private System.Windows.Forms.TextBox txtBuscar;
+        private System.Windows.Forms.Button btnNovoCliente;
     }
 }
 
